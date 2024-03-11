@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\productprof;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\File;
+
 
 
 class prodprofController extends Controller
@@ -81,12 +83,26 @@ class prodprofController extends Controller
 
 
 
+
+
     public function getProducts()
         {
-     $productprof= productprof::all();
-    return response()->json($productprof);
+    //  $productprof= productprof::all();
+    // return response()->json($productprof);
+
+    $productprof = DB::table('productprof')
+        ->join('unit', 'productprof.unitid', '=', 'unit.id')
+        ->join('brand', 'productprof.brandid', '=', 'brand.id')
+        ->join('imagepath', 'productprof.imagepathid', '=', 'imagepath.id')
+        ->select('productprof.id','productprof.productname', 'productprof.desc','unit.produnit as unit_name', 'brand.prodbrand as brand_name','imagepath.img_path as images_path')
+        ->orderBy('productprof.id','desc')
+        ->get();
+        return response()->json($productprof);
         }
     
+
+
+
 public function storeProdprof(Request $request)
 
     {
@@ -121,6 +137,7 @@ public function storeProdprof(Request $request)
         'unitid.required' => 'The Unit is required.',
 
         'brandid.required' => 'The Brand is required.',
+        
         'imagepathid.required' => 'The Images is required.',
         
         // 'contactnum.regex' => 'From 0-9,-,|,+ is allowed',
@@ -135,7 +152,7 @@ public function storeProdprof(Request $request)
             'desc' => $request->desc,
             'unitid' => $request->unitid,
             'brandid' => $request->brandid,
-            'imagepathid' => $request->imagepathid,
+            'imagepathid' => $request->imagepathid
       
         ]);
         $productprof->save();

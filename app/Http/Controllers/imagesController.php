@@ -14,10 +14,7 @@ class imagesController extends Controller
     $images=images::all();
     return response()->json($images);
    }
-
     // From chat Gpt
-
-    
     public function uploadImage(Request $request)
 {
 
